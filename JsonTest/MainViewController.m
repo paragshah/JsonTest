@@ -11,6 +11,14 @@
 #import "JsonDownloader.h"
 
 
+#define JSON_ITUNES_TOP_25 @"https://itunes.apple.com/us/rss/topsongs/limit=25/genre=20/json" // alternative
+#define kCellReuseIdentifier @"cell"
+#define kJsonKeyEntry @"entry"
+#define kJsonKeyFeed @"feed"
+#define kJsonKeyLabel @"label"
+#define kJsonKeyTitle @"title"
+
+
 @interface MainViewController ()<JSDownloaderDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic) UITableView *tableView;
@@ -21,13 +29,6 @@
 
 
 @implementation MainViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-    }
-    return self;
-}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -41,15 +42,17 @@
   mainTVC.tableView.delegate = self;
   mainTVC.tableView.dataSource = self;
   self.tableView = mainTVC.tableView;
-  [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
+  [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kCellReuseIdentifier];
+
   [self.view addSubview:mainTVC.view];
 }
 
 #pragma mark - JSDownloaderDelegate
 
 - (void)download:(JsonDownloader *)jsonDownloader didFinishWithDictionary:(NSDictionary *)data {
-  self.list = data[@"feed"][@"entry"];
+  self.list = data[kJsonKeyFeed][kJsonKeyEntry];
 
+  // on the main queue!
   dispatch_async(dispatch_get_main_queue(), ^{
     [self.tableView reloadData];
   });
@@ -72,13 +75,13 @@
 #pragma mark - UITableViewDelegate
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
+  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellReuseIdentifier forIndexPath:indexPath];
 
   if (cell == nil) {
     cell = [UITableViewCell new];
   }
 
-  cell.textLabel.text = self.list[indexPath.row][@"title"][@"label"];
+  cell.textLabel.text = self.list[indexPath.row][kJsonKeyTitle][kJsonKeyLabel];
   return cell;
 }
 

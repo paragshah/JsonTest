@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "JsonDownloader.h"
 
-#define JSON_ITUNES_TOP_25 @"https://itunes.apple.com/us/rss/topsongs/limit=25/genre=20/json"
-
 
 @class JsonDownloader;
 

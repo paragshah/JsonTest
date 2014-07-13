@@ -27,6 +27,15 @@
 }
 
 - (void)start {
+
+  if (self.URL == nil) {
+    if ([self.delegate respondsToSelector:@selector(download:didFailWithError:)]) {
+      NSError *error = [NSError errorWithDomain:@"paragshah.com" code:403 userInfo:nil];
+      [self.delegate download:self didFailWithError:error];
+    }
+    return;
+  }
+
   NSURLRequest *urlRequest = [[NSURLRequest alloc] initWithURL:self.URL];
   NSOperationQueue *queue = [[NSOperationQueue alloc] init];
 
